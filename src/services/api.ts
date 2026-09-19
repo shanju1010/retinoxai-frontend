@@ -48,4 +48,8 @@ export function getRetinalStructureImageUrl(): string {
   return `${BASE_URL}/retinal-structure/latest`;
 }
 
+export function getEnhancedImageUrl(): string {
+  return `${BASE_URL}/enhanced/latest`;
+}
+
 export { BASE_URL };

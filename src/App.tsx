@@ -9,6 +9,7 @@ import PredictionResult from '@/components/PredictionResult';
 import QualityMetrics from '@/components/QualityMetrics';
 import ExplanationViewer from '@/components/ExplanationViewer';
 import RetinalStructureViewer from '@/components/RetinalStructureViewer';
+import WorkflowViewer from '@/components/WorkflowViewer';
 import ScreeningSummary from '@/components/ScreeningSummary';
 import ClinicalReview from '@/components/ClinicalReview';
 import Disclaimer from '@/components/Disclaimer';
@@ -229,34 +230,24 @@ export default function App() {
         {/* Full-width sections below */}
         {hasResult && prediction && (
           <div className="space-y-5">
-            <ExplanationViewer originalImage={imagePreview} hasResult={hasResult} prediction={prediction} />
+            <ExplanationViewer
+              originalImage={imagePreview}
+              hasResult={hasResult}
+              prediction={prediction}
+              retinalStructure={retinalStructure}
+            />
 
             {retinalStructure && (
               <RetinalStructureViewer structure={retinalStructure} hasResult={hasResult} />
             )}
 
-            <section className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-semibold text-slate-800">Retinal Image Processing Workflow</h2>
-                <p className="text-xs text-slate-500 mt-1.5">Image quality control and enhancement steps used before AI inference.</p>
-              </div>
-              <div className="p-5">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  {[
-                    ['01', 'Image Acquisition', 'Fundus image uploaded for screening'],
-                    ['02', 'Quality Assessment', 'Focus, illumination and image adequacy checked'],
-                    ['03', 'Adaptive Enhancement', 'CLAHE-based contrast enhancement and preprocessing'],
-                    ['04', 'AI Inference', 'EfficientNet-B0 predicts DR severity 0–4'],
-                  ].map(([step, title, description]) => (
-                    <div key={step} className="relative rounded-md border border-slate-200 bg-slate-50 p-4">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-teal-50 border border-teal-100 text-xs font-bold text-teal-700">{step}</span>
-                      <p className="mt-3 text-xs font-semibold text-slate-800">{title}</p>
-                      <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">{description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
+            {qualityData && (
+              <WorkflowViewer
+                originalImage={imagePreview}
+                quality={qualityData}
+                prediction={prediction}
+              />
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <ScreeningSummary
