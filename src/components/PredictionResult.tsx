@@ -1,3 +1,4 @@
+import { Info, Stethoscope } from 'lucide-react';
 import type { Prediction } from '@/types/api';
 
 interface Props {
@@ -12,6 +13,14 @@ const GRADE_COLORS: Record<number, string> = {
   4: 'bg-rose-50 text-rose-700 border-rose-200',
 };
 
+const GRADE_GUIDE = [
+  ['0', 'No DR'],
+  ['1', 'Mild NPDR'],
+  ['2', 'Moderate NPDR'],
+  ['3', 'Severe NPDR'],
+  ['4', 'Proliferative DR'],
+] as const;
+
 export default function PredictionResult({ prediction }: Props) {
   const gradeColor = GRADE_COLORS[prediction.grade] || 'bg-slate-50 text-slate-700 border-slate-200';
   const confidencePct = (prediction.confidence * 100).toFixed(1);
@@ -19,8 +28,12 @@ export default function PredictionResult({ prediction }: Props) {
   return (
     <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-slate-100">
-        <h2 className="text-sm font-semibold text-slate-800">AI Screening Result</h2>
+        <div className="flex items-center gap-2">
+          <Stethoscope className="w-4 h-4 text-teal-700" />
+          <h2 className="text-sm font-semibold text-slate-800">AI Screening Result</h2>
+        </div>
       </div>
+
       <div className="p-5 space-y-4">
         <div>
           <p className="text-xs font-medium text-slate-500 mb-1.5">DR Grade</p>
@@ -46,6 +59,26 @@ export default function PredictionResult({ prediction }: Props) {
                 {prediction.referable_dr ? 'Yes' : 'No'}
               </span>
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-md border border-slate-200 bg-white overflow-hidden">
+          <div className="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+            <Info className="w-3.5 h-3.5 text-teal-700" />
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">International DR severity guide</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
+            {GRADE_GUIDE.map(([grade, label]) => (
+              <div key={grade} className="px-3 py-2.5">
+                <p className="text-xs font-bold text-slate-700">{grade}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="px-3.5 py-2.5 bg-amber-50/60 border-t border-slate-200">
+            <p className="text-[11px] text-slate-700">
+              <span className="font-semibold">Referable DR threshold:</span> Grade 2 or above in this prototype.
+            </p>
           </div>
         </div>
       </div>
