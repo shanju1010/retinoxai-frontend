@@ -8,6 +8,7 @@ import QualityResult from '@/components/QualityResult';
 import PredictionResult from '@/components/PredictionResult';
 import QualityMetrics from '@/components/QualityMetrics';
 import ExplanationViewer from '@/components/ExplanationViewer';
+import RetinalStructureViewer from '@/components/RetinalStructureViewer';
 import ScreeningSummary from '@/components/ScreeningSummary';
 import ClinicalReview from '@/components/ClinicalReview';
 import Disclaimer from '@/components/Disclaimer';
@@ -18,6 +19,7 @@ import type {
   ReviewStatus,
   Prediction,
   QualityMetrics as QualityMetricsType,
+  RetinalStructure,
   ScreenResponse,
 } from '@/types/api';
 
@@ -48,6 +50,7 @@ export default function App() {
 
   const [qualityData, setQualityData] = useState<QualityMetricsType | null>(null);
   const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [retinalStructure, setRetinalStructure] = useState<RetinalStructure | null>(null);
   const [retakeMessage, setRetakeMessage] = useState<string | null>(null);
   const [hasResult, setHasResult] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>('pending');
@@ -73,6 +76,7 @@ export default function App() {
   const resetResults = useCallback(() => {
     setQualityData(null);
     setPrediction(null);
+    setRetinalStructure(null);
     setRetakeMessage(null);
     setHasResult(false);
     setReviewStatus('pending');
@@ -119,6 +123,7 @@ export default function App() {
       } else if (isPredictionResponse(res)) {
         setQualityData(res.quality);
         setPrediction(res.prediction);
+        setRetinalStructure(res.retinal_structure);
         setHasResult(true);
       } else {
         setError('Received an unexpected response from the screening service.');
@@ -225,6 +230,10 @@ export default function App() {
         {hasResult && prediction && (
           <div className="space-y-5">
             <ExplanationViewer originalImage={imagePreview} hasResult={hasResult} prediction={prediction} />
+
+            {retinalStructure && (
+              <RetinalStructureViewer structure={retinalStructure} hasResult={hasResult} />
+            )}
 
             <section className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100">

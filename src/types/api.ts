@@ -21,11 +21,35 @@ export interface QualityMetrics {
   reasons: string[];
 }
 
+export interface RetinalStructure {
+  vessels: {
+    analyzed: boolean;
+    candidate_pixels: number;
+    density: number;
+  };
+  optic_disc: {
+    detected: boolean;
+    center_x: number;
+    center_y: number;
+    radius: number;
+    confidence: number;
+  };
+  fovea: {
+    estimated: boolean;
+    center_x: number;
+    center_y: number;
+    confidence: number;
+    method: string;
+  };
+}
+
 export interface PredictionResponse {
   status: 'ok';
   prediction: Prediction;
   quality: QualityMetrics;
+  retinal_structure: RetinalStructure;
   explanation_image: string;
+  retinal_structure_image: string;
   note: string;
 }
 
