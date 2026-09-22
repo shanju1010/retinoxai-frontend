@@ -1,21 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CircleDot, Eye, Info, ScanLine, X } from 'lucide-react';
-import { getRetinalStructureImageUrl } from '@/services/api';
 import type { RetinalStructure } from '@/types/api';
 
 interface Props {
   structure: RetinalStructure;
   hasResult: boolean;
+  imageUrl: string | null;
 }
 
-export default function RetinalStructureViewer({ structure, hasResult }: Props) {
+export default function RetinalStructureViewer({
+  structure,
+  hasResult,
+  imageUrl,
+}: Props) {
   const [imageError, setImageError] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
-
-  const imageUrl = useMemo(
-    () => `${getRetinalStructureImageUrl()}?t=${Date.now()}`,
-    [hasResult]
-  );
 
   useEffect(() => {
     setImageError(false);
@@ -47,7 +46,7 @@ export default function RetinalStructureViewer({ structure, hasResult }: Props) 
               </h3>
             </div>
 
-            {!imageError ? (
+            {!imageError && imageUrl ? (
               <button
                 onClick={() => setLightbox(imageUrl)}
                 className="block w-full rounded-lg overflow-hidden border border-slate-200 bg-slate-900 hover:ring-2 hover:ring-teal-500 transition-all"

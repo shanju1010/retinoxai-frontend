@@ -1,22 +1,30 @@
-import { useMemo } from 'react';
 import { CheckCircle2, Image as ImageIcon, Sparkles, Stethoscope } from 'lucide-react';
 
 import type { Prediction, QualityMetrics } from '@/types/api';
-import { getEnhancedImageUrl, getExplanationImageUrl } from '@/services/api';
 
 interface Props {
   originalImage: string | null;
   quality: QualityMetrics;
   prediction: Prediction;
+  enhancedImage: string | null;
+  gradcamImage: string | null;
 }
 
 function StepImage({
   src,
   alt,
 }: {
-  src: string;
+  src: string | null;
   alt: string;
 }) {
+  if (!src) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-400 text-center px-3">
+        Image output unavailable
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-900">
       <img
@@ -28,14 +36,13 @@ function StepImage({
   );
 }
 
-export default function WorkflowViewer({ originalImage, quality, prediction }: Props) {
-  const stamp = useMemo(
-    () => Date.now(),
-    [originalImage, prediction.grade, prediction.confidence]
-  );
-  const enhancedUrl = `${getEnhancedImageUrl()}?t=${stamp}`;
-  const gradCamUrl = `${getExplanationImageUrl()}?t=${stamp}`;
-
+export default function WorkflowViewer({
+  originalImage,
+  quality,
+  prediction,
+  enhancedImage,
+  gradcamImage,
+}: Props) {
   const steps = [
     {
       number: '01',
@@ -77,7 +84,7 @@ export default function WorkflowViewer({ originalImage, quality, prediction }: P
       icon: Sparkles,
       content: (
         <StepImage
-          src={enhancedUrl}
+          src={enhancedImage}
           alt="Enhanced fundus image after preprocessing"
         />
       ),
@@ -91,7 +98,7 @@ export default function WorkflowViewer({ originalImage, quality, prediction }: P
       content: (
         <div className="space-y-2">
           <StepImage
-            src={gradCamUrl}
+            src={gradcamImage}
             alt="Grad-CAM explanation for the AI prediction"
           />
           <div className="grid grid-cols-2 gap-2">

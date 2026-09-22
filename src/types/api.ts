@@ -1,4 +1,4 @@
-﻿export interface HealthResponse {
+export interface HealthResponse {
   status: string;
   device: string;
   model: string;
@@ -43,13 +43,18 @@ export interface RetinalStructure {
   };
 }
 
+export interface PredictionOutputs {
+  gradcam: string;
+  enhanced_image: string;
+  retinal_structure: string;
+}
+
 export interface PredictionResponse {
   status: 'ok';
   prediction: Prediction;
   quality: QualityMetrics;
   retinal_structure: RetinalStructure;
-  explanation_image: string;
-  retinal_structure_image: string;
+  outputs: PredictionOutputs;
   note: string;
 }
 

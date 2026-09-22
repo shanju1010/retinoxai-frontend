@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ScanEye,
   X,
@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   ArrowDown,
 } from 'lucide-react';
-import { getExplanationImageUrl } from '@/services/api';
 import type { RetinalStructure } from '@/types/api';
 
 interface Props {
@@ -24,6 +23,7 @@ interface Props {
     referable_dr: boolean;
   } | null;
   retinalStructure?: RetinalStructure | null;
+  explanationImage: string | null;
 }
 
 function getGradeExplanation(grade: number, gradeName: string): string {
@@ -64,15 +64,19 @@ function formatConfidence(value: number): string {
   return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '—';
 }
 
-export default function ExplanationViewer({ originalImage, hasResult, prediction, retinalStructure }: Props) {
+export default function ExplanationViewer({
+  originalImage,
+  hasResult,
+  prediction,
+  retinalStructure,
+  explanationImage,
+}: Props) {
   const [camError, setCamError] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  const camUrl = useMemo(() => `${getExplanationImageUrl()}?t=${Date.now()}`, [hasResult]);
-
   useEffect(() => {
     setCamError(false);
-  }, [camUrl]);
+  }, [explanationImage]);
 
   if (!hasResult) return null;
 
@@ -187,14 +191,14 @@ export default function ExplanationViewer({ originalImage, hasResult, prediction
                 <ScanEye className="w-3.5 h-3.5 text-slate-400" />
                 <h4 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Grad-CAM Attention Map</h4>
               </div>
-              {!camError ? (
+              {!camError && explanationImage ? (
                 <button
-                  onClick={() => setLightbox(camUrl)}
+                  onClick={() => setLightbox(explanationImage)}
                   className="block w-full rounded-lg overflow-hidden border border-slate-200 bg-slate-900 hover:ring-2 hover:ring-teal-500 transition-all"
                   aria-label="Open Grad-CAM attention map"
                 >
                   <img
-                    src={camUrl}
+                    src={explanationImage}
                     alt="Grad-CAM heatmap showing model attention"
                     className="w-full h-64 object-contain"
                     onError={() => setCamError(true)}

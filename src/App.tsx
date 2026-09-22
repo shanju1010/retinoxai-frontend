@@ -52,6 +52,17 @@ export default function App() {
   const [qualityData, setQualityData] = useState<QualityMetricsType | null>(null);
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [retinalStructure, setRetinalStructure] = useState<RetinalStructure | null>(null);
+
+  const [outputImages, setOutputImages] = useState<{
+    gradcam: string | null;
+    enhanced_image: string | null;
+    retinal_structure: string | null;
+  }>({
+    gradcam: null,
+    enhanced_image: null,
+    retinal_structure: null,
+  });
+
   const [retakeMessage, setRetakeMessage] = useState<string | null>(null);
   const [hasResult, setHasResult] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>('pending');
@@ -78,6 +89,13 @@ export default function App() {
     setQualityData(null);
     setPrediction(null);
     setRetinalStructure(null);
+
+    setOutputImages({
+      gradcam: null,
+      enhanced_image: null,
+      retinal_structure: null,
+    });
+
     setRetakeMessage(null);
     setHasResult(false);
     setReviewStatus('pending');
@@ -125,6 +143,15 @@ export default function App() {
         setQualityData(res.quality);
         setPrediction(res.prediction);
         setRetinalStructure(res.retinal_structure);
+
+        // Use the exact output images returned by this /predict request.
+        // Do not make additional requests that could hit another Vercel instance.
+        setOutputImages({
+          gradcam: res.outputs.gradcam,
+          enhanced_image: res.outputs.enhanced_image,
+          retinal_structure: res.outputs.retinal_structure,
+        });
+
         setHasResult(true);
       } else {
         setError('Received an unexpected response from the screening service.');
@@ -235,10 +262,15 @@ export default function App() {
               hasResult={hasResult}
               prediction={prediction}
               retinalStructure={retinalStructure}
+              explanationImage={outputImages.gradcam}
             />
 
             {retinalStructure && (
-              <RetinalStructureViewer structure={retinalStructure} hasResult={hasResult} />
+              <RetinalStructureViewer
+                structure={retinalStructure}
+                hasResult={hasResult}
+                imageUrl={outputImages.retinal_structure}
+              />
             )}
 
             {qualityData && (
@@ -246,6 +278,8 @@ export default function App() {
                 originalImage={imagePreview}
                 quality={qualityData}
                 prediction={prediction}
+                enhancedImage={outputImages.enhanced_image}
+                gradcamImage={outputImages.gradcam}
               />
             )}
 
